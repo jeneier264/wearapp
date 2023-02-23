@@ -23,7 +23,6 @@ const CreatePage = () => {
     const [itemList, setItemList] = useState(itemSamples);
     const [isMainShown, setIsMainShown] = useState(true);
     const  [selectedCategory, setSelectedCategory] = useState();   
-    const  [selectedItem, setSelectedItem] = useState();  
     const [isItemSelected, setIsItemSelceted] = useState(null);
     const [ItemsForCanvasArray, setItemsForCanvasArray] = useState(emptyArray);
     
@@ -37,58 +36,28 @@ const CreatePage = () => {
 
     var filteredList = useMemo(getFilteredList, [selectedCategory, itemList]);
 
-    // function getItemForCanvas(selectedItem) {
-    //     if(!selectedItem) {
-    //         return ItemsForCanvasArray.push(null);
-    //     }
-    //     ItemsForCanvasArray.push(itemList.find((item) => item.id == selectedItem).id)
-    //     console.log(ItemsForCanvasArray);
-    //     return ItemsForCanvasArray;
-    // }
-
-    // var ItemsForCanvas = getItemForCanvas(selectedItem);
-
     function handleClickCategory(event) {
         setSelectedCategory(event.currentTarget.value);
         setIsMainShown(current => !current);
      };
 
     function handleClickItem(event) {
-        setSelectedItem(event.currentTarget.value);
         setIsItemSelceted(event.currentTarget.value);
-        setItemsForCanvasArray([...ItemsForCanvasArray, event.currentTarget.value]); // array of id-s of iems that appear on canvas
-        //setItems([...Items, event.currentTarget.value]);
-        //console.log(ItemsForCanvasArray);
-     };
-
-    // function handleClickUndo() {
-
-    // }
-
-     function getItemsForCanvas() {
-        var localItemsArray = [];
-        for (let item of ItemsForCanvasArray) {
-            var imgOrigin  = new Image();
-            imgOrigin.src = itemList.find((el) => el.id == item).image; 
-            var imgWidth = imgOrigin.naturalWidth * 0.25;
-            var imgHeight = imgOrigin.naturalHeight * 0.25;
-            var Item = {
-            // x: localStorage.getItem('x'),
-            // y: localStorage.getItem('y'),
+        var imgOrigin  = new Image();
+        imgOrigin.src = itemList.find((el) => el.id == event.currentTarget.value).image; 
+        var imgWidth = imgOrigin.naturalWidth * 0.25;
+        var imgHeight = imgOrigin.naturalHeight * 0.25;
+        var Item = {
             x:  0,
             y: 0,
             width: imgWidth,
             height:imgHeight,
             img: imgOrigin,
-            }
-            localItemsArray.push(Item);
-        }
-        return localItemsArray;
+        };
+        setItemsForCanvasArray([...ItemsForCanvasArray, Item]); // array of id-s of iems that appear on canvas
+        
      };
 
-     var Items = useMemo(getItemsForCanvas, [ItemsForCanvasArray, itemList])
-     //const [Items, setItems] = useState(useMemo(getItemsForCanvas, [ItemsForCanvasArray, itemList]))
-     //localStorage.clear()
     return (
     <div className="bg-primary w-full overflow-hidden p-0">
         <div className={`${styles.paddingX} ${styles.flexCenter}`}>
@@ -109,7 +78,7 @@ const CreatePage = () => {
                 </div>
                 <div className='flex-row w-[650px]'>
                 { isItemSelected != null ? (
-                        <Canvas height={400} width={650} items={Items} x={x} setX={setX} y={y} setY={setY} />
+                        <Canvas height={400} width={650} items={ItemsForCanvasArray} />
                     ) : (
                         <p className={`${styles.paragraph1}`}>add items...</p>
                     ) }
