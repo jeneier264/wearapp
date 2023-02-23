@@ -2,15 +2,14 @@ import React, { useEffect, useRef} from 'react';
 import PropTypes from 'prop-types';
 
 
-const Canvas = ( {height, width, items, x, setX, y, setY} ) => { 
+const Canvas = ( {height, width, items} ) => { 
 
-  // 1 memorize position on canvas
-  // sizes of items memorize
   
   const canvas = useRef();
 
   var outline;
   var current_item_index = null;
+  var selected = null;
 
   const draw = (context) => { 
     context.clearRect(0, 0, width, height);
@@ -77,6 +76,7 @@ const Canvas = ( {height, width, items, x, setX, y, setY} ) => {
         }
         index++;
       }
+
       draw(context);
     };
 
@@ -86,7 +86,9 @@ const Canvas = ( {height, width, items, x, setX, y, setY} ) => {
       }
       event.preventDefault();
       is_dragging = false;
-      outline = false;
+      outline = true;
+      var returnItem = items[current_item_index];
+      console.log(items[current_item_index]); // i can memorize clicked item here
       draw(context);
     };
 
@@ -115,19 +117,11 @@ const Canvas = ( {height, width, items, x, setX, y, setY} ) => {
         current_item.x += dx;
         current_item.y += dy;
 
-        console.log(current_item);
-        
-        // localStorage.removeItem('x')
-        // localStorage.setItem('x', current_item.x)
-        // localStorage.removeItem('y')
-        // localStorage.setItem('y', current_item.y)
 
         draw(context);
 
         startX = mouseX;
         startY = mouseY; 
-        // setX(x+=dx)
-        // setY(y+=dy)
       }
         
        
@@ -137,8 +131,6 @@ const Canvas = ( {height, width, items, x, setX, y, setY} ) => {
     canvas.current.onmouseout = mouse_out;
     canvas.current.onmousemove = mouse_move;
 
-    
-    // localStorage.clear()
   });
   return (
     <canvas
@@ -148,10 +140,10 @@ const Canvas = ( {height, width, items, x, setX, y, setY} ) => {
     />
   )
 }
-// ADDED
+
 Canvas.propTypes = {
-  height: PropTypes.number.isRequired, // ADDED
-  width: PropTypes.number.isRequired, // ADDED
+  height: PropTypes.number.isRequired, 
+  width: PropTypes.number.isRequired, 
   items: PropTypes.array.isRequired
 };
 
