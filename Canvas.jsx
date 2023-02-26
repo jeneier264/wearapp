@@ -1,15 +1,49 @@
-import React, { useEffect, useRef} from 'react';
-import PropTypes from 'prop-types';
+import React, { useEffect, useRef, useState} from 'react';
+import PropTypes, { func } from 'prop-types';
+import flip from '../assets/flip-svgrepo-com.svg';
+import up from '../assets/arrow-up-outline.svg';
+import down from '../assets/arrow-down-outline.svg';
+import crop from '../assets/crop-outline.svg';
+import close from '../assets/close-circle-outline.svg';
+import back from '../assets/arrow-back-outline.svg';
+import forward from '../assets/arrow-forward-outline.svg';
+import styles from '../style';
 
 
-const Canvas = ( {height, width, items} ) => { 
-
+const Canvas = ( {height, width, items, isItemSelected} ) => { 
   
   const canvas = useRef();
+  const [idSelected, setIdSelected] = useState();
+  const [isDeleted, setIsDeleted] = useState(false);
+  const [isMoved, setIsMoved] = useState(false);
+
+  function handleClickDelete(event) {
+    items.splice(event.currentTarget.value, 1);
+    setIsDeleted(current => !current);
+    if (items.length == 0) {
+      isItemSelected(null);
+    }
+  };
+
+  function handleClickUp(event) {
+    let index = Number(event.currentTarget.value);
+    setIsMoved(current => !current);
+    if(index != items.length-1) {
+      [items[index], items[index+1]] = [items[index+1], items[index]];
+    }
+  };
+
+  function handleClickDown(event) {
+    let index = Number(event.currentTarget.value);
+    setIsMoved(current => !current);
+    if(index != 0) {
+      [items[index], items[index-1]] = [items[index-1], items[index]];
+    }
+  };
+
 
   var outline;
   var current_item_index = null;
-  var selected = null;
 
   const draw = (context) => { 
     context.clearRect(0, 0, width, height);
@@ -70,9 +104,13 @@ const Canvas = ( {height, width, items} ) => {
       for (let item of items) {
         if(is_mouse_in_shape(startX, startY, item)) {
           current_item_index = index;
+          setIdSelected(index);
           is_dragging = true;
           outline = true;
           return;
+        }
+        else  {
+          outline = false;
         }
         index++;
       }
@@ -87,8 +125,7 @@ const Canvas = ( {height, width, items} ) => {
       event.preventDefault();
       is_dragging = false;
       outline = true;
-      var returnItem = items[current_item_index];
-      console.log(items[current_item_index]); // i can memorize clicked item here
+     // i can memorize clicked item here
       draw(context);
     };
 
@@ -116,6 +153,7 @@ const Canvas = ( {height, width, items} ) => {
         let current_item = items[current_item_index];
         current_item.x += dx;
         current_item.y += dy;
+     
 
 
         draw(context);
@@ -123,7 +161,6 @@ const Canvas = ( {height, width, items} ) => {
         startX = mouseX;
         startY = mouseY; 
       }
-        
        
     };
     canvas.current.onmousedown = mouse_down;
@@ -132,19 +169,32 @@ const Canvas = ( {height, width, items} ) => {
     canvas.current.onmousemove = mouse_move;
 
   });
+  
   return (
-    <canvas
-      ref={canvas}
-      width={width} 
-      height={height}
-    />
+    <div className={`flex-col ${styles.canavsSection1} ${styles.flexCenter} justify-between`}>
+      <div className='flex-row justify-between'>
+        <button className='p-2'><img src={flip} alt="flip" className='w-[23px] h-[23px]'/></button>
+        <button value={idSelected} onClick={handleClickUp} className='p-2'><img src={up} alt="up" className='w-[23px] h-[23px]'/></button>
+        <button value={idSelected} onClick={handleClickDown} className='p-2'><img src={down} alt="down" className='w-[23px] h-[23px]'/></button>
+        <button className='p-2'><img src={crop} alt="crop" className='w-[23px] h-[23px]'/></button>
+        <button value={idSelected} onClick={handleClickDelete} className='p-2'><img src={close} alt="close" className='w-[23px] h-[23px]'/></button>
+      </div>
+      <div className='flex-row w-[650px]'>
+            <canvas ref={canvas} width={width} height={height} />
+      </div>
+      <div className='flex-row justify-between'>
+        <button className='p-2'><img src={back} alt="back" className='w-[23px] h-[23px]'/></button>
+        <button className='p-2'><img src={forward} alt="forward" className='w-[23px] h-[23px]'/></button>
+      </div>
+    </div>
+
   )
 }
 
 Canvas.propTypes = {
   height: PropTypes.number.isRequired, 
   width: PropTypes.number.isRequired, 
-  items: PropTypes.array.isRequired
+  items: PropTypes.array.isRequired,
 };
 
 export default Canvas;
