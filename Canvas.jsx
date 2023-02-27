@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState} from 'react';
-import PropTypes, { func } from 'prop-types';
+import { Stage, Layer, Rect, Transformer } from 'react-konva';
+import PropTypes from 'prop-types';
 import flip from '../assets/flip-svgrepo-com.svg';
 import up from '../assets/arrow-up-outline.svg';
 import down from '../assets/arrow-down-outline.svg';
@@ -8,6 +9,7 @@ import close from '../assets/close-circle-outline.svg';
 import back from '../assets/arrow-back-outline.svg';
 import forward from '../assets/arrow-forward-outline.svg';
 import styles from '../style';
+
 
 
 const Canvas = ( {height, width, items, isItemSelected} ) => { 
@@ -179,7 +181,7 @@ const Canvas = ( {height, width, items, isItemSelected} ) => {
         <button className='p-2'><img src={crop} alt="crop" className='w-[23px] h-[23px]'/></button>
         <button value={idSelected} onClick={handleClickDelete} className='p-2'><img src={close} alt="close" className='w-[23px] h-[23px]'/></button>
       </div>
-      <div className='flex-row w-[650px]'>
+      <div className='flex-row w-[690px]'>
             <canvas ref={canvas} width={width} height={height} />
       </div>
       <div className='flex-row justify-between'>
