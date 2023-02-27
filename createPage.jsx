@@ -25,8 +25,16 @@ const CreatePage = () => {
     const  [selectedCategory, setSelectedCategory] = useState();   
     const [isItemSelected, setIsItemSelceted] = useState(null);
     const [ItemsForCanvasArray, setItemsForCanvasArray] = useState(emptyArray);
+    const [isHovering, setIsHovering] = useState(-1);
+
+    const handleMouseOver = (i) => {
+        setIsHovering(i);
+      };
     
-    
+      const handleMouseOut = () => {
+        setIsHovering(-1);
+      };
+     
     function getFilteredList() {
         if (!selectedCategory) {
           return itemList;
@@ -47,12 +55,15 @@ const CreatePage = () => {
         imgOrigin.src = itemList.find((el) => el.id == event.currentTarget.value).image; 
         var imgWidth = imgOrigin.naturalWidth * 0.25;
         var imgHeight = imgOrigin.naturalHeight * 0.25;
+        var originalIndex = itemList.find((el) => el.id == event.currentTarget.value).id;
         var Item = {
+            id: originalIndex,
             x:  0,
             y: 0,
             width: imgWidth,
             height:imgHeight,
             img: imgOrigin,
+            timeStamp: Math.floor(Date.now() / 1000),  // use timestamp as id in array (in order of adding to array)
         };
         setItemsForCanvasArray([...ItemsForCanvasArray, Item]); // array of id-s of iems that appear on canvas
         
@@ -68,27 +79,26 @@ const CreatePage = () => {
         </div>
 
         <div className='flex justify-evenly md:flex-row flex-col pb-3'>
-            <div className={`flex-col ${styles.canavsSection1} ${styles.flexCenter} justify-between`}>
-                <div className='flex-row justify-between'>
-                    <button className='p-2'><img src={flip} alt="flip" className='w-[23px] h-[23px]'/></button>
-                    <button className='p-2'><img src={up} alt="up" className='w-[23px] h-[23px]'/></button>
-                    <button className='p-2'><img src={down} alt="down" className='w-[23px] h-[23px]'/></button>
-                    <button className='p-2'><img src={crop} alt="crop" className='w-[23px] h-[23px]'/></button>
-                    <button className='p-2'><img src={close} alt="close" className='w-[23px] h-[23px]'/></button>
-                </div>
-                <div className='flex-row w-[650px]'>
-                { isItemSelected != null ? (
-                        <Canvas height={400} width={650} items={ItemsForCanvasArray} />
-                    ) : (
+            { isItemSelected != null ? (
+                <Canvas height={405} width={690} items={ItemsForCanvasArray} isItemSelected={setIsItemSelceted}/>
+            ) : (
+                <div className={`flex-col ${styles.canavsSection1} ${styles.flexCenter} justify-between`}>
+                    <div className='flex-row justify-between'>
+                        <button className='p-2'><img src={flip} alt="flip" className='w-[23px] h-[23px]'/></button>
+                        <button className='p-2'><img src={up} alt="up" className='w-[23px] h-[23px]'/></button>
+                        <button className='p-2'><img src={down} alt="down" className='w-[23px] h-[23px]'/></button>
+                        <button className='p-2'><img src={crop} alt="crop" className='w-[23px] h-[23px]'/></button>
+                        <button className='p-2'><img src={close} alt="close" className='w-[23px] h-[23px]'/></button>
+                    </div>
+                    <div className='flex-row w-[690px]'>
                         <p className={`${styles.paragraph1}`}>add items...</p>
-                    ) }
+                    </div>
+                    <div className='flex-row justify-between'>
+                        <button className='p-2'><img src={back} alt="back" className='w-[23px] h-[23px]'/></button>
+                        <button className='p-2'><img src={forward} alt="forward" className='w-[23px] h-[23px]'/></button>
+                    </div>
                 </div>
-                <div className='flex-row justify-between'>
-                    <button className='p-2'><img src={back} alt="back" className='w-[23px] h-[23px]'/></button>
-                    <button className='p-2'><img src={forward} alt="forward" className='w-[23px] h-[23px]'/></button>
-                </div>
-            </div>
-
+            )}
 
             { isMainShown ? (
             <div className={`flex-col ${styles.canavsSection2} ${styles.flexCenter} justify-between`}>
@@ -145,21 +155,24 @@ const CreatePage = () => {
             <div className={`flex-col ${styles.canavsSection2} ${styles.flexCenter} justify-between`}>
                 <div className='p-6 grid gap-x-7 gap-y-4 grid-cols-3 justify-between'>
                     {filteredList.map((item, index) => (
-                    <div className='container h-[70px] p-3 m-3'>
+                    <div className='container h-[70px] w-[140px] p-3 m-3' onMouseOver={()=>handleMouseOver(index)} onMouseOut={handleMouseOut}>
                         <div className='flex justify-center'>
                             <button value={item.id} onClick={handleClickItem}>
                                 <img
                                     key={item.id}
                                     src={item.image}
                                     alt={item.id}
-                                    className={`cursor-pointer object-center h-[70px]`}>
+                                    className={`cursor-pointer object-center h-[70px]`}
+                                    >
                                 </img>
                             </button>
                         </div>
-                        <div className='flex justify-between opacity-0 hover:opacity-100 '>
-                            <button><img src={add} alt="add" className='h-[30px]' /></button>
-                            <button><img src={heart_circle} alt="heart" className='h-[30px]' /></button>
-                        </div>
+                        { isHovering === index ? (
+                            <div className='flex justify-between'>
+                                <button><img src={add} alt="add" className='h-[30px]' /></button>
+                                <button><img src={heart_circle} alt="heart" className='h-[30px]' /></button>
+                            </div> 
+                        ) : (null)}
                     </div>
                     ))}
                 </div>
